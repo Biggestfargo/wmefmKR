@@ -25,15 +25,41 @@ export default function KidRockBookingForm() {
   const [budgetRange, setBudgetRange] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const form = e.currentTarget
+    const formData = new FormData(form)
 
-    alert("Booking request submitted successfully! WME will contact you within 48 hours.")
-    setIsSubmitting(false)
+    // Add conditional fields to form data
+    formData.append("event-type", eventType)
+    formData.append("performance-type", performanceType)
+    formData.append("budget-range", budgetRange)
+    formData.append("event-date", eventDate ? format(eventDate, "PPP") : "")
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
+      })
+
+      if (response.ok) {
+        alert("Booking request submitted successfully! WME will contact you within 48 hours.")
+        form.reset()
+        setEventDate(undefined)
+        setEventType("")
+        setPerformanceType("")
+        setBudgetRange("")
+      } else {
+        throw new Error("Form submission failed")
+      }
+    } catch (error) {
+      alert("There was an error submitting your request. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -55,7 +81,17 @@ export default function KidRockBookingForm() {
           </Badge>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form
+          name="kid-rock-booking"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          onSubmit={handleSubmit}
+          className="space-y-8"
+        >
+          {/* Add hidden fields for Netlify */}
+          <input type="hidden" name="form-name" value="kid-rock-booking" />
+          <input type="hidden" name="bot-field" />
           {/* Contact Information */}
           <Card>
             <CardHeader>
@@ -69,11 +105,11 @@ export default function KidRockBookingForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name *</Label>
-                  <Input id="firstName" placeholder="John" required />
+                  <Input id="firstName" name="first-name" placeholder="John" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name *</Label>
-                  <Input id="lastName" placeholder="Smith" required />
+                  <Input id="lastName" name="last-name" placeholder="Smith" required />
                 </div>
               </div>
 
@@ -82,14 +118,28 @@ export default function KidRockBookingForm() {
                   <Label htmlFor="email">Email Address *</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input id="email" type="email" placeholder="john@company.com" className="pl-10" required />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="john@company.com"
+                      className="pl-10"
+                      required
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number *</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input id="phone" type="tel" placeholder="+1 (555) 123-4567" className="pl-10" required />
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      className="pl-10"
+                      required
+                    />
                   </div>
                 </div>
               </div>
@@ -97,11 +147,11 @@ export default function KidRockBookingForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="company">Company/Organization *</Label>
-                  <Input id="company" placeholder="Event Company LLC" required />
+                  <Input id="company" name="company" placeholder="Event Company LLC" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="title">Your Title</Label>
-                  <Input id="title" placeholder="Event Director" />
+                  <Input id="title" name="title" placeholder="Event Director" />
                 </div>
               </div>
             </CardContent>
@@ -120,7 +170,7 @@ export default function KidRockBookingForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="eventName">Event Name *</Label>
-                  <Input id="eventName" placeholder="Summer Music Festival 2024" required />
+                  <Input id="eventName" name="event-name" placeholder="Summer Music Festival 2024" required />
                 </div>
                 <div className="space-y-2">
                   <Label>Event Type *</Label>
@@ -165,7 +215,7 @@ export default function KidRockBookingForm() {
                   <Label htmlFor="eventTime">Event Time *</Label>
                   <div className="relative">
                     <Clock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input id="eventTime" type="time" className="pl-10" required />
+                    <Input id="eventTime" name="event-time" type="time" className="pl-10" required />
                   </div>
                 </div>
               </div>
@@ -174,24 +224,24 @@ export default function KidRockBookingForm() {
                 <Label htmlFor="venue">Venue Name *</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input id="venue" placeholder="Madison Square Garden" className="pl-10" required />
+                  <Input id="venue" name="venue" placeholder="Madison Square Garden" className="pl-10" required />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">City *</Label>
-                  <Input id="city" placeholder="New York" required />
+                  <Input id="city" name="city" placeholder="New York" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="state">State/Province *</Label>
-                  <Input id="state" placeholder="NY" required />
+                  <Input id="state" name="state" placeholder="NY" required />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="expectedAttendance">Expected Attendance *</Label>
-                <Select required>
+                <Select name="expected-attendance" required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select attendance range" />
                   </SelectTrigger>
@@ -221,7 +271,7 @@ export default function KidRockBookingForm() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label>Performance Type *</Label>
-                <RadioGroup value={performanceType} onValueChange={setPerformanceType} required>
+                <RadioGroup name="performance-type" value={performanceType} onValueChange={setPerformanceType} required>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="full-concert" id="full-concert" />
                     <Label htmlFor="full-concert">Full Concert (90+ minutes)</Label>
@@ -255,27 +305,27 @@ export default function KidRockBookingForm() {
                 <Label>Additional Services (Check all that apply)</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="soundcheck" />
+                    <Checkbox id="soundcheck" name="additional-services" value="soundcheck" />
                     <Label htmlFor="soundcheck">Soundcheck Required</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="rehearsal" />
+                    <Checkbox id="rehearsal" name="additional-services" value="rehearsal" />
                     <Label htmlFor="rehearsal">Rehearsal Time</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="interviews" />
+                    <Checkbox id="interviews" name="additional-services" value="interviews" />
                     <Label htmlFor="interviews">Media Interviews</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="photos" />
+                    <Checkbox id="photos" name="additional-services" value="photos" />
                     <Label htmlFor="photos">Photo Opportunities</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="merchandise" />
+                    <Checkbox id="merchandise" name="additional-services" value="merchandise" />
                     <Label htmlFor="merchandise">Merchandise Sales</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="recording" />
+                    <Checkbox id="recording" name="additional-services" value="recording" />
                     <Label htmlFor="recording">Recording Rights</Label>
                   </div>
                 </div>
@@ -285,6 +335,7 @@ export default function KidRockBookingForm() {
                 <Label htmlFor="technical-requirements">Technical Requirements</Label>
                 <Textarea
                   id="technical-requirements"
+                  name="technical-requirements"
                   placeholder="Describe any specific technical requirements, stage setup, lighting, sound system specifications, etc."
                   rows={4}
                 />
@@ -324,6 +375,7 @@ export default function KidRockBookingForm() {
                 <Label htmlFor="budget-notes">Budget Notes</Label>
                 <Textarea
                   id="budget-notes"
+                  name="budget-notes"
                   placeholder="Additional budget considerations, payment terms, or special arrangements..."
                   rows={3}
                 />
@@ -333,27 +385,27 @@ export default function KidRockBookingForm() {
                 <Label>Budget Includes (Check all that apply)</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="travel" />
+                    <Checkbox id="travel" name="budget-includes" value="travel" />
                     <Label htmlFor="travel">Travel & Transportation</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="accommodation" />
+                    <Checkbox id="accommodation" name="budget-includes" value="accommodation" />
                     <Label htmlFor="accommodation">Accommodation</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="catering" />
+                    <Checkbox id="catering" name="budget-includes" value="catering" />
                     <Label htmlFor="catering">Catering & Hospitality</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="production" />
+                    <Checkbox id="production" name="budget-includes" value="production" />
                     <Label htmlFor="production">Production Costs</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="security" />
+                    <Checkbox id="security" name="budget-includes" value="security" />
                     <Label htmlFor="security">Security</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="insurance" />
+                    <Checkbox id="insurance" name="budget-includes" value="insurance" />
                     <Label htmlFor="insurance">Insurance</Label>
                   </div>
                 </div>
@@ -372,6 +424,7 @@ export default function KidRockBookingForm() {
                 <Label htmlFor="event-description">Event Description</Label>
                 <Textarea
                   id="event-description"
+                  name="event-description"
                   placeholder="Provide a detailed description of your event, its purpose, target audience, and any special significance..."
                   rows={4}
                 />
@@ -381,6 +434,7 @@ export default function KidRockBookingForm() {
                 <Label htmlFor="special-requests">Special Requests or Requirements</Label>
                 <Textarea
                   id="special-requests"
+                  name="special-requests"
                   placeholder="Any special requests, dietary requirements, accessibility needs, or other important considerations..."
                   rows={3}
                 />
@@ -388,7 +442,7 @@ export default function KidRockBookingForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="timeline">Booking Timeline</Label>
-                <Select>
+                <Select name="booking-timeline">
                   <SelectTrigger>
                     <SelectValue placeholder="When do you need confirmation?" />
                   </SelectTrigger>
@@ -403,7 +457,7 @@ export default function KidRockBookingForm() {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Checkbox id="terms" required />
+                <Checkbox id="terms" name="terms-agreement" required />
                 <Label htmlFor="terms" className="text-sm">
                   I agree to the terms and conditions and understand that this is a booking inquiry, not a confirmed
                   booking. WME will review and respond within 48 hours. *
