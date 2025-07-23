@@ -47,8 +47,10 @@
 
     <h2>Celebrity Booking Request</h2>
     <p>Please fill out the form below to request a celebrity for your event. We will review your request and get back to you as soon as possible.</p>
+        
+    <form name="celebrity-booking" data-netlify="true" hidden>
+      <input type="hidden" name="form-name" value="celebrity-booking" />
 
-    <form name="celebrity-booking" action="/submit" method="POST">
         <label for="name">Your Name:</label>
         <input type="text" id="name" name="name" required>
 

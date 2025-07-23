@@ -1,7 +1,7 @@
 {
-  "name": "my-v0-project",
+  "name": "wmebooking",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@netlify/plugin-nextjs": "^4.41.3",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
@@ -46,7 +47,7 @@
     "geist": "latest",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",
-    "next": "15.2.4",
+    "next": "^15.4.3",
     "next-themes": "latest",
     "react": "^19",
     "react-day-picker": "latest",

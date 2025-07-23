@@ -1,3 +1,4 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7a78438f-bbcc-434a-b49b-42ddcb60bdac/deploy-status)](https://app.netlify.com/projects/flourishing-valkyrie-228815/deploys)
 # Smooth form build
 
 *Automatically synced with your [v0.dev](https://v0.dev) deployments*
