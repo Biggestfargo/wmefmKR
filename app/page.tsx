@@ -1,7 +1,7 @@
 "use client"
 
-import KidRockBookingForm from "../booking-form"
+import CelebrityBookingForm from "../booking-form"
 
 export default function Page() {
-  return <KidRockBookingForm />
+  return <CelebrityBookingForm />
 }
