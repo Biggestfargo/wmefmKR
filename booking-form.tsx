@@ -184,7 +184,18 @@ export default function CelebrityBookingForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form 
+          onSubmit={handleSubmit(onSubmit)} 
+          className="space-y-8"
+          name="celebrity-booking"
+          method="POST"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+        >
+          {/* Netlify hidden input for form name */}
+          <input type="hidden" name="form-name" value="celebrity-booking" />
+          {/* Netlify honeypot field for spam protection */}
+          <input type="hidden" name="bot-field" />
           {/* Contact Information */}
           <Card>
             <CardHeader>
