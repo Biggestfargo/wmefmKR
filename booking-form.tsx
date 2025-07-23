@@ -1037,4 +1037,3 @@ export default function CelebrityBookingForm() {
   )
 }
 
-export default function CelebrityBookingForm()
